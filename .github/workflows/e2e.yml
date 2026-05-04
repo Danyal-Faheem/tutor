@@ -1,0 +1,115 @@
+name: E2E and smoke tests
+
+on:
+  push:
+    branches:
+      - release
+      - main
+  pull_request:
+    branches:
+      - release
+      - main
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tutor
+        uses: actions/checkout@v3
+
+      - name: Checkout cypress-e2e-tests
+        uses: actions/checkout@v3
+        with:
+          repository: openedx/cypress-e2e-tests
+          ref: master
+          path: cypress-e2e-tests
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install tutor
+        run: pip install -e .[dev]
+
+      - name: Install Cypress dependencies
+        run: npm ci
+        working-directory: cypress-e2e-tests
+
+      - name: Add OpenEdX domains to /etc/hosts
+        run: |
+          echo "127.0.0.1 local.openedx.io studio.local.openedx.io apps.local.openedx.io" | sudo tee -a /etc/hosts
+
+      - name: Disable HTTPS for CI
+        run: tutor config save --set ENABLE_HTTPS=false
+
+      - name: Launch tutor local
+        run: tutor local launch --non-interactive
+        timeout-minutes: 30
+
+      - name: Create admin user
+        run: tutor local do createuser --staff --superuser admin admin@example.com -p "admin"
+
+      - name: Import demo course
+        run: tutor local do importdemocourse
+        timeout-minutes: 15
+
+      - name: Create OAuth2 client for smoke tests
+        run: |
+          LMS_CONTAINER=$(docker ps --format "{{.Names}}" | grep "lms" | grep -v "celery\|worker\|beat\|flower" | head -1)
+          docker exec -i "$LMS_CONTAINER" ./manage.py lms shell << 'PYEOF'
+          from oauth2_provider.models import Application
+          from django.contrib.auth import get_user_model
+          User = get_user_model()
+          user = User.objects.get(username='admin')
+          Application.objects.get_or_create(
+              client_id='ci-test-client-id',
+              defaults=dict(
+                  name='ci-test-client',
+                  user=user,
+                  client_secret='ci-test-client-secret',
+                  client_type='confidential',
+                  authorization_grant_type='client-credentials',
+              )
+          )
+          print('OAuth2 app ready')
+          PYEOF
+
+      - name: Install pytest
+        run: pip install pytest
+
+      - name: Run Python smoke tests
+        run: pytest tests/integration/ -v
+        env:
+          LMS_HOST: local.openedx.io
+          CMS_HOST: studio.local.openedx.io
+          OAUTH2_CLIENT_ID: ci-test-client-id
+          OAUTH2_CLIENT_SECRET: ci-test-client-secret
+          TEST_USERNAME: admin
+          TEST_PASSWORD: admin
+          TEST_COURSE_ID: course-v1:edX+DemoX+Demo_Course
+
+      - name: Run Cypress smoke tests
+        run: npm run cy:run:smoke
+        working-directory: cypress-e2e-tests
+        env:
+          CYPRESS_LMS_BASE_URL: http://local.openedx.io
+          CYPRESS_BASE_CMS_URL: http://studio.local.openedx.io
+          CYPRESS_BASE_MFE_URL: http://apps.local.openedx.io
+          CYPRESS_ADMIN_USER_NAME: admin
+          CYPRESS_ADMIN_USER_EMAIL: admin@example.com
+          CYPRESS_ADMIN_USER_PASSWORD: admin
+          CYPRESS_LMS_USER_NAME: admin
+          CYPRESS_LMS_USER_EMAIL: admin@example.com
+          CYPRESS_LMS_USER_PASSWORD: admin
+          CYPRESS_ENABLE_REGISTER_NEW_USER: "false"
+          CYPRESS_ENABLE_BULK_EMAIL_FLAG: "false"
+          CYPRESS_ENABLE_SUPPORT_URL: "false"
+          CYPRESS_ENABLE_PROGRAMS: "false"
+          CYPRESS_ENABLE_CREATE_NEW_COURSE: "true"
+          CYPRESS_ENABLE_CREATE_NEW_COURSE_FOR_UNIT_TESTS: "true"

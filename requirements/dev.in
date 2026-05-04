@@ -9,3 +9,6 @@ twine
 # Types packages
 types-docutils
 types-PyYAML
+
+# Integration tests
+pytest
