@@ -37,6 +37,12 @@ jobs:
       - name: Install tutor
         run: pip install -e .[dev]
 
+      - name: Install tutor plugins
+        run: pip install -r requirements/plugins.txt
+
+      - name: Enable tutor plugins
+        run: tutor plugins enable indigo mfe
+
       - name: Install Cypress dependencies
         run: npm ci
         working-directory: cypress-e2e-tests
@@ -92,7 +98,7 @@ jobs:
           OAUTH2_CLIENT_SECRET: ci-test-client-secret
           TEST_USERNAME: admin
           TEST_PASSWORD: admin
-          TEST_COURSE_ID: course-v1:edX+DemoX+Demo_Course
+          TEST_COURSE_ID: course-v1:OpenedX+DemoX+DemoCourse
 
       - name: Run Cypress smoke tests
         run: npm run cy:run:smoke
