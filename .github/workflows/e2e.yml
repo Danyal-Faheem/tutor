@@ -9,6 +9,20 @@ on:
     branches:
       - release
       - main
+  workflow_dispatch:
+    inputs:
+      tutor_ref:
+        description: "Tutor branch, or tag to check out"
+        required: false
+        default: ""
+      plugins:
+        description: 'Space-separated list of tutor plugins to enable (e.g. "indigo mfe")'
+        required: false
+        default: "indigo mfe"
+      images:
+        description: 'Space-separated list of tutor images to build (e.g. "openedx")'
+        required: false
+        default: "openedx"
 
 jobs:
   e2e:
@@ -16,6 +30,8 @@ jobs:
     steps:
       - name: Checkout tutor
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.tutor_ref || github.ref }}
 
       - name: Checkout cypress-e2e-tests
         uses: actions/checkout@v3
@@ -41,7 +57,10 @@ jobs:
         run: pip install -r requirements/plugins.txt
 
       - name: Enable tutor plugins
-        run: tutor plugins enable indigo mfe
+        run: tutor plugins enable ${{ github.event.inputs.plugins || 'indigo mfe' }}
+
+      - name: Build tutor images
+        run: tutor images build ${{ github.event.inputs.images || 'openedx' }}
 
       - name: Install Cypress dependencies
         run: npm ci
@@ -67,8 +86,7 @@ jobs:
 
       - name: Create OAuth2 client for smoke tests
         run: |
-          LMS_CONTAINER=$(docker ps --format "{{.Names}}" | grep "lms" | grep -v "celery\|worker\|beat\|flower" | head -1)
-          docker exec -i "$LMS_CONTAINER" ./manage.py lms shell << 'PYEOF'
+          tutor local exec lms ./manage.py lms shell << 'PYEOF'
           from oauth2_provider.models import Application
           from django.contrib.auth import get_user_model
           User = get_user_model()
