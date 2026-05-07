@@ -36,8 +36,8 @@ jobs:
       - name: Checkout cypress-e2e-tests
         uses: actions/checkout@v3
         with:
-          repository: openedx/cypress-e2e-tests
-          ref: master
+          repository: Danyal-Faheem/cypress-e2e-tests
+          ref: danyal/fix-e2e-tutor
           path: cypress-e2e-tests
 
       - name: Set up Python
