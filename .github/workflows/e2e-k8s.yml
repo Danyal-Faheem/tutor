@@ -14,7 +14,7 @@ on:
       tutor_ref:
         description: "Tutor branch, or tag to check out"
         required: false
-        default: ${{ github.ref }}
+        default: ""
       plugins:
         description: 'Space-separated list of tutor plugins to enable (e.g. "indigo mfe")'
         required: false
