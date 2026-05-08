@@ -212,6 +212,19 @@ class Filters:
     #:   may contain Jinja markup, similar to templates.
     CLI_DO_INIT_TASKS: Filter[list[tuple[str, str]], []] = Filter()
 
+    #: List of test suites registered by plugins, run via ``tutor local/dev/k8s tests``.
+    #:
+    #: Each item is a ``(suite_name, path)`` tuple where ``suite_name`` is a tag such as
+    #: ``"smoke"`` and ``path`` is an absolute path to a pytest-collectible file or
+    #: directory. Use the context system to associate items with a plugin so that
+    #: ``--limit=<plugin>`` filters correctly::
+    #:
+    #:     with hooks.Contexts.app("myplugin").enter():
+    #:         hooks.Filters.TESTS.add_item(("smoke", "/path/to/tests/smoke"))
+    #:
+    #: :parameter list[tuple[str, str]] suites: list of ``(suite_name, path)`` tuples.
+    TESTS: Filter[list[tuple[str, str]], []] = Filter()
+
     #: List of folders to bind-mount in docker-compose containers, either in ``tutor local`` or ``tutor dev``.
     #:
     #: This filter is for processing values of the ``MOUNTS`` setting such as::

@@ -651,6 +651,7 @@ k8s.add_command(wait)
 k8s.add_command(upgrade)
 k8s.add_command(apply_command)
 k8s.add_command(status)
+k8s.add_command(jobs.tests_command)
 
 
 @hooks.Actions.PLUGINS_LOADED.add()

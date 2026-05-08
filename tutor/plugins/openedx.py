@@ -50,6 +50,26 @@ def _set_openedx_common_version_in_main(
     return items
 
 
+_SMOKE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tests", "smoke"))
+
+with hooks.Contexts.app("lms").enter():
+    hooks.Filters.TESTS.add_items(
+        [
+            ("smoke", os.path.join(_SMOKE_DIR, "test_lms.py")),
+            ("smoke", os.path.join(_SMOKE_DIR, "test_auth.py")),
+            ("smoke", os.path.join(_SMOKE_DIR, "test_users.py")),
+            ("smoke", os.path.join(_SMOKE_DIR, "test_enrollment.py")),
+        ]
+    )
+
+with hooks.Contexts.app("cms").enter():
+    hooks.Filters.TESTS.add_items(
+        [
+            ("smoke", os.path.join(_SMOKE_DIR, "test_courses.py")),
+        ]
+    )
+
+
 @hooks.Filters.APP_PUBLIC_HOSTS.add()
 def _edx_platform_public_hosts(
     hosts: list[str], context_name: t.Literal["local", "dev"]

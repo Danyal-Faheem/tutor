@@ -490,6 +490,7 @@ def add_commands(command_group: click.Group) -> None:
     command_group.add_command(execute)
     command_group.add_command(logs)
     command_group.add_command(status)
+    command_group.add_command(jobs.tests_command)
 
     @hooks.Actions.PLUGINS_LOADED.add()
     def _add_do_commands() -> None:
