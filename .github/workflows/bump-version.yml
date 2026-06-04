@@ -8,7 +8,7 @@ on:
         required: true
         type: string
       openedx_common_version:
-        description: "OPENEDX_COMMON_VERSION (leave blank to use current value)"
+        description: "OPENEDX_COMMON_VERSION (e.g. release/ulmo.4) Leave blank to use current version"
         required: false
         type: string
 
@@ -21,6 +21,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Set version variables
+        run: |
+          echo "VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+          echo "RELEASE_TAG=v${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -60,17 +65,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b v${{ github.event.inputs.version }}
+          git checkout -b $RELEASE_TAG
           git add -A
-          git commit -m "v${{ github.event.inputs.version }}"
-          git push origin v${{ github.event.inputs.version }}
+          git commit -m "$RELEASE_TAG"
+          git push origin $RELEASE_TAG
 
       - name: Create Pull Request
         run: |
           gh pr create \
-            --title "v${{ github.event.inputs.version }}" \
-            --body "Version bump to v${{ github.event.inputs.version }}" \
+            --title "$RELEASE_TAG" \
+            --body "Release preparation for $RELEASE_TAG" \
             --base "${{ github.event.repository.default_branch }}" \
-            --head "v${{ github.event.inputs.version }}"
+            --head "$RELEASE_TAG"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
