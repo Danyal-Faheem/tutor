@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "New version (e.g. v21.0.8)"
+        description: "New version (e.g. 21.0.8)"
         required: true
         type: string
       openedx_common_version:
@@ -60,17 +60,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b ${{ github.event.inputs.version }}
+          git checkout -b v${{ github.event.inputs.version }}
           git add -A
-          git commit -m "${{ github.event.inputs.version }}"
-          git push origin ${{ github.event.inputs.version }}
+          git commit -m "v${{ github.event.inputs.version }}"
+          git push origin v${{ github.event.inputs.version }}
 
       - name: Create Pull Request
         run: |
           gh pr create \
-            --title "${{ github.event.inputs.version }}" \
-            --body "Release preparation for ${{ github.event.inputs.version }}" \
-            --base "${{ github.event.repository.default_branch }}" \
-            --head "${{ github.event.inputs.version }}"
+            --title "v${{ github.event.inputs.version }}" \
+            --body "Version bump to v${{ github.event.inputs.version }}" \
+            --base "v${{ github.event.repository.default_branch }}" \
+            --head "v${{ github.event.inputs.version }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
