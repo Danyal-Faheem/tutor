@@ -1,9 +1,12 @@
 name: Bump Version
-
+# This action should only be used for Major and Minor version bumps of tutor.
+# For Release version bumps, the process is manual as defined here: https://github.com/overhangio/tutor/blob/release/docs/tutor.rst#releasing-a-new-version-1
 on:
   workflow_dispatch:
     inputs:
       version:
+        # These versions should follow the tutor version format, aka RELEASE.MAJOR.MINOR(-BRANCH)
+        # More details for versioning are here: https://github.com/overhangio/tutor/blob/release/docs/tutor.rst#versioning
         description: "New version (e.g. 21.0.8)"
         required: true
         type: string
@@ -20,17 +23,26 @@ jobs:
       pull-requests: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set version variables
         run: |
           echo "VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
           echo "RELEASE_TAG=v${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
 
+      - name: Prevent major version bump
+        run: |
+          CURRENT_MAJOR=$(make version | cut -d. -f1)
+          INPUT_MAJOR=$(echo "${{ github.event.inputs.version }}" | cut -d. -f1)
+          if [ "$INPUT_MAJOR" != "$CURRENT_MAJOR" ]; then
+            echo "Error: Release version bump detected. Use the manual release process as documented here (https://github.com/overhangio/tutor/blob/release/docs/tutor.rst#releasing-a-new-version-1) for Release version bums."
+            exit 1
+          fi
+
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: "3.9"
+          python-version: "3.14"
 
       - name: Install scriv
         run: pip install scriv
@@ -74,7 +86,7 @@ jobs:
         run: scriv collect
 
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v7
+        uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: ${{ env.RELEASE_TAG }}
