@@ -20,6 +20,29 @@ instructions, because git commits are used to generate release notes:
 
 <!-- scriv-insert-here -->
 
+<a id='changelog-21.0.7'></a>
+## v21.0.7 (2026-05-25)
+
+- [BugFix] Redis configmap will not be generated & deployed with tutor k8s when RUN_REDIS is False. (by @Faraz32123)
+
+- [BugFix] Fix k8s-override patches not applying to jobs by rendering kustomization before renaming job. (by @Faraz32123)
+
+- [Improvement] Add tutorial for customizing and overriding translations, covering theme translation overrides (e.g. Indigo) and managing translations for forked repositories, custom plugins, and additional MFEs. (by @eemaanamir)
+
+- [BugFix] Temporarily pin kubernetes to v35 as kubernetes v36 in-cluster config no longer attaches Authorization header. (by @Faraz32123)
+
+<a id='changelog-21.0.6'></a>
+## v21.0.6 (2026-05-08)
+
+- [Bugfix] Fix `tutor local launch --non-interactive` overwriting `LMS_HOST`, `CMS_HOST`, and `ENABLE_HTTPS` with development defaults on every run. The non-interactive dev-defaults branch added in #1375 fired for any falsy `run_for_prod`, including the `None` value used for `local`, silently clobbering production configuration. Reverts the `interactive_configuration` change from #1375 and instead fixes the underlying issue (#1372) by changing the default `LMS_HOST` to `local.openedx.io` so a fresh `tutor dev launch -I` lands on dev-friendly defaults without forcing them.
+
+<a id='changelog-21.0.5'></a>
+## v21.0.5 (2026-05-05)
+
+- [Bugfix] Fixes wrong LMS_HOST when `tutor dev launch -I` is executed. After this change, it will set to `local.openedx.io` instead of `www.myopenedx.com` (by @muhammadadeeltajamul)
+
+- [Feature] Upgrade OPENEDX_COMMON_VERSION to release/ulmo.3 (by @ahmed-arb)
+
 <a id='changelog-21.0.4'></a>
 ## v21.0.4 (2026-04-10)
 

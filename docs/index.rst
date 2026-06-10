@@ -39,6 +39,7 @@ Tutor: the Docker-based Open edX distribution designed for peace of mind
    run
    configuration
    plugins/index
+   testing/index
    sysadmin/index
    upgrading
    uninstallation
@@ -54,6 +55,7 @@ Tutor: the Docker-based Open edX distribution designed for peace of mind
    tutor
    developing/openedx
    developing/themes
+   developing/custom-translations
    developing/legacy/index
 
 .. toctree::
