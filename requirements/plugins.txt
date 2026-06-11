@@ -2,7 +2,7 @@
 tutor-android>=21.0.0,<22.0.0
 tutor-cairn>=21.0.0,<22.0.0
 tutor-credentials>=21.0.0,<22.0.0
-tutor-discovery>=21.0.0,<22.0.0
+tutor-discovery>=21.0.1,<22.0.0
 tutor-deck>=21.0.0,<22.0.0
 tutor-forum>=21.0.0,<22.0.0
 tutor-indigo>=21.0.0,<22.0.0
