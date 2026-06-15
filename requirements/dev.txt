@@ -5,9 +5,7 @@
 #    pip-compile requirements/dev.in
 #
 altgraph==0.17.5
-    # via
-    #   macholib
-    #   pyinstaller
+    # via pyinstaller
 appdirs==1.4.4
     # via -r requirements/base.txt
 attrs==26.1.0
@@ -21,6 +19,8 @@ certifi==2026.5.20
     #   -r requirements/base.txt
     #   kubernetes
     #   requests
+cffi==2.0.0
+    # via cryptography
 charset-normalizer==3.4.7
     # via
     #   -r requirements/base.txt
@@ -35,6 +35,8 @@ click-log==0.4.0
     # via scriv
 coverage==7.10.7
     # via -r requirements/dev.in
+cryptography==49.0.0
+    # via secretstorage
 docutils==0.22.4
     # via readme-renderer
 durationpy==0.10
@@ -63,6 +65,10 @@ jaraco-context==6.1.1
     # via keyring
 jaraco-functools==4.4.0
     # via keyring
+jeepney==0.9.0
+    # via
+    #   keyring
+    #   secretstorage
 jinja2==3.1.6
     # via
     #   -r requirements/base.txt
@@ -75,8 +81,6 @@ librt==0.11.0
     # via
     #   -r requirements/base.txt
     #   mypy
-macholib==1.16.4
-    # via pyinstaller
 markdown-it-py==3.0.0
     # via
     #   rich
@@ -117,15 +121,17 @@ pathspec==1.1.1
     #   mypy
 pip-tools==7.5.3
     # via -r requirements/dev.in
+pycparser==2.23
+    # via cffi
 pycryptodome==3.23.0
     # via -r requirements/base.txt
 pygments==2.20.0
     # via
     #   readme-renderer
     #   rich
-pyinstaller==6.20.0
+pyinstaller==6.21.0
     # via -r requirements/dev.in
-pyinstaller-hooks-contrib==2026.5
+pyinstaller-hooks-contrib==2026.6
     # via pyinstaller
 pyproject-hooks==1.2.0
     # via
@@ -163,6 +169,8 @@ ruff==0.15.14
     # via -r requirements/dev.in
 scriv==1.7.0
     # via -r requirements/dev.in
+secretstorage==3.3.3
+    # via keyring
 six==1.17.0
     # via
     #   -r requirements/base.txt
@@ -183,6 +191,7 @@ types-pyyaml==6.0.12.20250915
 typing-extensions==4.15.0
     # via
     #   -r requirements/base.txt
+    #   cryptography
     #   mypy
 urllib3==2.6.3
     # via
