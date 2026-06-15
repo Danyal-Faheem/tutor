@@ -1,0 +1,1 @@
+- [Improvement] Upgrade MongoDB from 7.0.28 to 7.0.32. (by @github-actions[bot])
