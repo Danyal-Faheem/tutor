@@ -1,0 +1,1 @@
+- [Improvement] Upgrade MySQL from 8.4.0 to 8.4.9. (by @github-actions[bot])
